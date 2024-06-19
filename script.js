@@ -1,7 +1,7 @@
 function createGrid(rows, cols) {
     const grid = new Array(rows);
     for (let i = 0; i < rows; i++) {
-        grid[i] = new Array(cols).fill('susceptible');
+        grid[i] = new Array(cols).fill('normal');
     }
     return grid;
 }
@@ -19,7 +19,7 @@ function updateGrid(grid) {
             // Apply rules based on neighbors and current state
             // Example rule: infection spread
             const infectedNeighbors = countInfectedNeighbors(grid, i, j);
-            if (cell === 'susceptible' && infectedNeighbors > 1) {
+            if (cell === 'normal' && infectedNeighbors > 1) {
                 newGrid[i][j] = 'infected';
             } else {
                 newGrid[i][j] = grid[i][j];
@@ -56,8 +56,24 @@ function drawGrid(grid) {
             cell.className = 'cell ' + cellState;
             gridContainer.appendChild(cell);
         });
-        gridContainer.appendChild(document.createElement('br'));
     });
 }
 
-drawGrid(grid);
+
+// flood fill
+async function fill(grid, x, y, target, replacement) {
+    // sleep for 100ms
+    await new Promise(r => setTimeout(r, 100));
+    if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length) return;
+    if (grid[x][y] !== target) return;
+    grid[x][y] = "infected";
+    drawGrid(grid); 
+    fill(grid, x + 1, y, target, replacement);
+    fill(grid, x - 1, y, target, replacement);
+    fill(grid, x, y + 1, target, replacement);
+    fill(grid, x, y - 1, target, replacement);
+}
+
+fill(grid, 0, 0, 100, 200);
+drawGrid(grid); 
+
