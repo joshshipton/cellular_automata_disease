@@ -9,9 +9,12 @@ class Disease {
         this.lengthOfImmunity = lengthOfImmunity;
     }
 
-    shouldInfect() {
+
+    shouldInfect(infectedNeighbors) {
+        // take into account infected neighbors
         return Math.random() < this.infectionRatePercentage;
     }
+
 
     shouldDie() {
         return Math.random() < this.mortalityRatePercentage;
@@ -49,7 +52,7 @@ function updateGrid(grid, disease) {
             const cell = grid[i][j];
             const infectedNeighbors = countInfectedNeighbors(grid, i, j);
             // if it's normal and should be infected, infect
-            if (cell.state === 'normal' && infectedNeighbors > 1 && disease.shouldInfect()) {
+            if ((cell.state === 'normal' || cell.state === "recovered") && infectedNeighbors > 1 && disease.shouldInfect(infectedNeighbors)) {
                 // set daysInfected to 1
                 newGrid[i][j] = { state: 'infected', daysInfected: 1 };
                 // if its infected, check if it should recover or die or get immunity
@@ -90,6 +93,8 @@ function updateGrid(grid, disease) {
     return newGrid;
 }
 
+// This is gonna change eventually to calculate the number of infected neighbors and then calculate the probability of infection from there 
+// Will have to be some sort of diminish return thing idk, wouldn't be linear
 function countInfectedNeighbors(grid, x, y) {
     let count = 0;
     for (let dx = -1; dx <= 1; dx++) {
