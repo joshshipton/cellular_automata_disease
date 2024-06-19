@@ -1,19 +1,31 @@
 
 .cell {
-    width: 20px;
-    height: 20px;
+    width: 10px;
+    height: 10px;
     border: 1px solid #ccc;
 }
 .normal { background-color: #fff; }
 .infected { background-color: #f00; }
 .recovered { background-color: #0f0; }
+.dead {background-color: black;}
+
+#settings {
+    align-items: center;
+    padding-left: 50px;
+    padding-right: -500px;
+    justify-content: column;
+}
+
+#stats{
+    padding-right: 50px;
+}
 
 #grid {
     display: grid;
-    grid-template-columns: repeat(25, 20px); /* x columns */
-    grid-template-rows: repeat(25, 20px); /* x rows */
+    grid-template-columns: repeat(75, 10px); /* x columns */
+    grid-template-rows: repeat(75, 10px); /* x rows */
     justify-content: center;
-    height: 50%;
+    padding-top: 10px;
     margin: 0 auto;
 }
 
