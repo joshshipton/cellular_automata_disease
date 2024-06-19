@@ -52,6 +52,8 @@ function countInfectedNeighbors(grid, x, y) {
 
 function drawGrid(grid) {
     const gridContainer = document.getElementById('grid');
+    // deletes the old grid for the new one
+    gridContainer.innerHTML = '';
     grid.forEach(row => {
         row.forEach(cellState => {
             const cell = document.createElement('div');
@@ -72,6 +74,9 @@ async function fill(grid, x, y,) {
     console.log("changing color at", x, y)
     grid[x][y] = "infected";
 
+    // wait for 100ms
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     // recursively fill in all directions
     fill(grid, x + 1, y);
     fill(grid, x - 1, y);
@@ -83,5 +88,5 @@ async function fill(grid, x, y,) {
 }
 
 drawGrid(grid);
-fill(grid, 0, 0, 100, 200);
+fill(grid, 0, 0);
 
