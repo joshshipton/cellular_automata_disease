@@ -1,7 +1,7 @@
 
 .cell {
-    width: 30px;
-    height: 30px;
+    width: 10px;
+    height: 10px;
     border: 1px solid #ccc;
 }
 .normal { background-color: #fff; }
@@ -10,8 +10,8 @@
 
 #grid {
     display: grid;
-    grid-template-columns: repeat(10, 30px); /* 10 columns */
-    grid-template-rows: repeat(10, 30px); /* 10 rows */
+    grid-template-columns: repeat(25, 10px); /* 10 columns */
+    grid-template-rows: repeat(25, 10px); /* 10 rows */
     justify-content: center;
     height: 50%;
     margin: 0 auto;
