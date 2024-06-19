@@ -1,0 +1,10 @@
+
+.cell {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    border: 1px solid #ccc;
+}
+.susceptible { background-color: #fff; }
+.infected { background-color: #f00; }
+.recovered { background-color: #0f0; }
