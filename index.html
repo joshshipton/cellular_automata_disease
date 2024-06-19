@@ -1,19 +1,26 @@
 
 <!DOCTYPE html>
 <head>
-    <title>Cellular Automata Simulation</title>
+    <title>Cellular Automata Diseases</title>
     <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
     <div id="settings">
+        <h4>Settings</h4>
         <p>Initial Infected</p>
         <input type="text" value="25" id="inital_infected_input">
         <p>Rate Of Infection (As a %)</p>
         <input type="text" value="50" id="rate_of_infection_input">
         <p>Mortality Rate (As a %)</p>
         <input type="text" value="10" id="mortaility_rate_input">
-        <p>Recovery Time</p>
+        <p>Recovery Time (days (-1 for ∞))</p>
         <input type="text" value="10" id="recovery_time_input">
+        <p>Chance Of Immunity (%)</p>
+        <input type="text" value="10" id="chance_of_immunity_input">
+        <p>Length Of Immunity (days)</p>
+        <input type="text" value="10" id="length_of_immunity_input">
+        <br>
+        <br>
         <button type="submit" id="createBtn">Create</button>
 
     </div>
@@ -21,11 +28,36 @@
     <div id="grid"></div> 
 
     <div id="stats">
+        <h4>Stats</h4>
         <p id="disease_name_stat">Disease Name: Example Disease</p>
+        <p id="days_passed">Days Passed: 0</p>
         <p id="disease_infected_stat">Infected: 0</p>
         <p id="disease_killed_stat">Killed: 0</p>   
         <p id="disease_recovered_stat">Recovered: 0</p>
+        <p id="total_simulated_people">Total: 0</p>
+
+        <div id="key">
+            <br>
+            <br>
+            <h4>Key</h4>
+
+            <p>Immune ↓</p>
+            <div class="cell immune key"></div>
+
+            <p>Infected ↓</p>
+            <div class="cell infected key"></div>
+
+            <p>Dead ↓</p>
+            <div class="cell dead key"></div>
+
+            <p>Normal ↓</p>
+            <div class="cell key"></div>
+
+            <p>Recovered (but not immune) ↓</p>
+            <div class="cell recovered"></div>
+        </div>
     </div>
+
     <script src="script.js"></script> 
 </body>
 </html>

@@ -1,9 +1,12 @@
 class Disease {
-    constructor(name, mortalityRatePercentage, infectionRatePercentage, recoveryTime) {
+    constructor(name, mortalityRatePercentage, infectionRatePercentage, recoveryTime, chanceOfImmunity, lengthOfImmunity) {
         this.name = name;
         this.mortalityRatePercentage = mortalityRatePercentage / 100;
         this.infectionRatePercentage = infectionRatePercentage / 100;
         this.recoveryTime = recoveryTime;
+        this.chanceOfImmunity = chanceOfImmunity / 100;
+        console.log(this.chanceOfImmunity);
+        this.lengthOfImmunity = lengthOfImmunity;
     }
 
     shouldInfect() {
@@ -16,6 +19,15 @@ class Disease {
 
     shouldRecover() {
         return Math.random() < (1 - this.mortalityRatePercentage);
+    }
+
+    shouldGetImmunity() {
+        console.log(this.chanceOfImmunity);
+        return Math.random() < this.chanceOfImmunity;
+    }
+
+    shouldLoseImmunity(daysImmune) {
+        return daysImmune >= this.lengthOfImmunity;
     }
 }
 
@@ -36,19 +48,41 @@ function updateGrid(grid, disease) {
         for (let j = 0; j < cols; j++) {
             const cell = grid[i][j];
             const infectedNeighbors = countInfectedNeighbors(grid, i, j);
+            // if it's normal and should be infected, infect
             if (cell.state === 'normal' && infectedNeighbors > 1 && disease.shouldInfect()) {
+                // set daysInfected to 1
                 newGrid[i][j] = { state: 'infected', daysInfected: 1 };
+                // if its infected, check if it should recover or die or get immunity
             } else if (cell.state === 'infected') {
+                // if it's been infected for the recovery time, recover
                 if (cell.daysInfected >= disease.recoveryTime) {
+                    // Check if should recover or die
                     if (disease.shouldDie()) {
                         newGrid[i][j] = { state: 'dead', daysInfected: cell.daysInfected };
-                    } else {
-                        newGrid[i][j] = { state: 'recovered', daysInfected: cell.daysInfected };
+
+                    } else { // Should recover
+                        // Check if should be immune 
+                        if (disease.shouldGetImmunity()) {
+                            console.log(`Cell at (${i}, ${j}) gained immunity.`); // Added this log for debugging
+
+                            // make it Immune
+                            newGrid[i][j] = { state: 'immune', daysInfected: cell.daysInfected };
+                        } else {
+                            // recover without Immunity
+                            newGrid[i][j] = { state: 'recovered', daysInfected: 0 };
+                        }
                     }
                 } else {
                     newGrid[i][j] = { state: 'infected', daysInfected: cell.daysInfected + 1 };
                 }
-            } else {
+            } else if (cell.state === 'immune') {
+                if (disease.shouldLoseImmunity()) {
+                    newGrid[i][j] = { state: 'recovered', daysInfected: 0 };
+                } else {
+                    newGrid[i][j] = cell
+                }
+            }
+            else {
                 newGrid[i][j] = cell;
             }
         }
@@ -98,12 +132,13 @@ function updateStats(grid) {
         row.forEach(cell => {
             if (cell.state === 'infected') infected++;
             if (cell.state === 'dead') dead++;
-            if (cell.state === 'recovered') recovered++;
+            if (cell.state === 'recovered' || cell.state == "immune") recovered++;
         });
     });
     document.getElementById('disease_infected_stat').textContent = `Infected: ${infected}`;
     document.getElementById('disease_killed_stat').textContent = `Killed: ${dead}`;
     document.getElementById('disease_recovered_stat').textContent = `Recovered: ${recovered}`;
+    document.getElementById('total_simulated_people').textContent = `Total: ${grid.length * grid[0].length}`;
 }
 
 let disease;
@@ -116,9 +151,11 @@ document.getElementById('createBtn').addEventListener('click', () => {
     const mortalityRate = parseInt(document.getElementById('mortaility_rate_input').value);
     const initialInfected = parseInt(document.getElementById('inital_infected_input').value);
     const recoveryTime = parseInt(document.getElementById('recovery_time_input').value);
+    const chanceOfImmunity = parseInt(document.getElementById('chance_of_immunity_input').value);
+    const lengthOfImmunity = parseInt(document.getElementById('length_of_immunity_input').value);
 
-    disease = new Disease("Example Disease", mortalityRate, infectionRate, recoveryTime);
-    
+    disease = new Disease("Example Disease", mortalityRate, infectionRate, recoveryTime, chanceOfImmunity, lengthOfImmunity);
+
     initializeGrid(grid, initialInfected);
     document.getElementById('disease_name_stat').textContent = `Disease Name: ${disease.name}`;
 
@@ -134,12 +171,13 @@ function simulate(grid, disease) {
     }, 100);
 }
 
-const gridContainer = document.getElementById('grid');
-gridContainer.addEventListener('click', (event) => {
-    const cell = event.target;
-    const index = Array.prototype.indexOf.call(gridContainer.children, cell);
-    const x = Math.floor(index / grid[0].length);
-    const y = index % grid[0].length;
-    grid[x][y] = grid[x][y].state === 'normal' ? { state: 'infected', daysInfected: 1 } : { state: 'normal', daysInfected: 0 };
-    drawGrid(grid);
-});
+// Click to Infect
+// const gridContainer = document.getElementById('grid');
+// gridContainer.addEventListener('click', (event) => {
+//     const cell = event.target;
+//     const index = Array.prototype.indexOf.call(gridContainer.children, cell);
+//     const x = Math.floor(index / grid[0].length);
+//     const y = index % grid[0].length;
+//     grid[x][y] = grid[x][y].state === 'normal' ? { state: 'infected', daysInfected: 1 } : { state: 'normal', daysInfected: 0 };
+//     drawGrid(grid);
+// });

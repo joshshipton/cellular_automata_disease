@@ -5,9 +5,15 @@
     border: 1px solid #ccc;
 }
 .normal { background-color: #fff; }
+.recovered {background-color: yellow;}
 .infected { background-color: #f00; }
-.recovered { background-color: #0f0; }
+.immune { background-color: #0f0; }
 .dead {background-color: black;}
+
+#couple{
+    display: flex;
+    justify-content: row;
+}
 
 #settings {
     align-items: center;
