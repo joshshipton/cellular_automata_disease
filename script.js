@@ -5,14 +5,15 @@ class Disease {
         this.infectionRatePercentage = infectionRatePercentage / 100;
         this.recoveryTime = recoveryTime;
         this.chanceOfImmunity = chanceOfImmunity / 100;
-        console.log(this.chanceOfImmunity);
         this.lengthOfImmunity = lengthOfImmunity;
     }
 
 
     shouldInfect(infectedNeighbors) {
-        // take into account infected neighbors
-        return Math.random() < this.infectionRatePercentage;
+        // take into account infected neighbors, make it an exponential function
+        const baseRate = this.infectionRatePercentage;
+        const adjustedRate = 1 - Math.pow((1 - baseRate), infectedNeighbors);
+        return Math.random() < adjustedRate;
     }
 
 
@@ -25,7 +26,6 @@ class Disease {
     }
 
     shouldGetImmunity() {
-        console.log(this.chanceOfImmunity);
         return Math.random() < this.chanceOfImmunity;
     }
 
@@ -66,10 +66,9 @@ function updateGrid(grid, disease) {
                     } else { // Should recover
                         // Check if should be immune 
                         if (disease.shouldGetImmunity()) {
-                            console.log(`Cell at (${i}, ${j}) gained immunity.`); // Added this log for debugging
 
-                            // make it Immune
-                            newGrid[i][j] = { state: 'immune', daysInfected: cell.daysInfected };
+                            // make it Immune, set days immune to 1
+                            newGrid[i][j] = { state: 'immune', daysImmune : 1, daysInfected: 0};
                         } else {
                             // recover without Immunity
                             newGrid[i][j] = { state: 'recovered', daysInfected: 0 };
@@ -79,10 +78,14 @@ function updateGrid(grid, disease) {
                     newGrid[i][j] = { state: 'infected', daysInfected: cell.daysInfected + 1 };
                 }
             } else if (cell.state === 'immune') {
-                if (disease.shouldLoseImmunity()) {
+                console.log("cell is immune");
+                console.log(cell.daysInfected);
+                // change it to take into account the length of imunity not the length of infection
+                if (disease.shouldLoseImmunity(cell.daysImmune)) {
                     newGrid[i][j] = { state: 'recovered', daysInfected: 0 };
                 } else {
-                    newGrid[i][j] = cell
+                    // increment days immune
+                    cell.daysImmune++;
                 }
             }
             else {
@@ -140,6 +143,7 @@ function updateStats(grid) {
             if (cell.state === 'recovered' || cell.state == "immune") recovered++;
         });
     });
+    document.getElementById("days_passed").textContent = `Day: ${days++}`;
     document.getElementById('disease_infected_stat').textContent = `Infected: ${infected}`;
     document.getElementById('disease_killed_stat').textContent = `Killed: ${dead}`;
     document.getElementById('disease_recovered_stat').textContent = `Recovered: ${recovered}`;
@@ -147,6 +151,7 @@ function updateStats(grid) {
 }
 
 let disease;
+let days = 1;
 let grid = createGrid(75, 75);
 
 drawGrid(grid);
